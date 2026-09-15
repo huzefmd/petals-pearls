@@ -74,7 +74,7 @@ function ContactPage() {
               <MessageCircle className="size-5 text-rose" />
               <span>
                 <span className="block text-sm font-medium">WhatsApp</span>
-                <span className="text-sm text-muted-foreground">+91 63649 43266</span>
+                <span className="text-sm text-muted-foreground">+91 7483 413 587</span>
               </span>
             </a>
             {settings?.instagram_url && (
@@ -91,13 +91,13 @@ function ContactPage() {
                 </span>
               </a>
             )}
-            <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card p-5">
+            {/* <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card p-5">
               <Mail className="size-5 text-rose" />
               <span>
                 <span className="block text-sm font-medium">Email</span>
                 <span className="text-sm text-muted-foreground">{settings?.email}</span>
               </span>
-            </div>
+            </div> */}
             <div className="flex items-center gap-3 rounded-lg border border-border/70 bg-card p-5">
               <MapPin className="size-5 text-rose" />
               <span>

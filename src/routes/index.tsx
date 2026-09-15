@@ -12,7 +12,12 @@ import {
   OCCASIONS,
 } from "@/lib/shop-data";
 import { whatsappLink } from "@/lib/whatsapp";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 import heroImage from "@/assets/hero-bouquet.jpg";
+import product1 from "@/assets/product-1.jpg";
+import product2 from "@/assets/product-2.jpg";
+import product3 from "@/assets/product-3.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,17 +46,22 @@ const FEATURES = [
 ];
 
 function HomePage() {
+  const [emblaRef] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ delay: 4000 }),
+  ]);
   const { data: products = [] } = useProducts();
   const { data: categories = [] } = useCategories();
   const { data: gallery = [] } = useGallery();
   const { data: reviews = [] } = useReviews();
   const { data: settings } = useSiteSettings();
 
+  const heroImages = [heroImage, product1, product2, product3];
   const bestSellers = products.filter((p) => p.is_best_seller).slice(0, 6);
   const orderLink = whatsappLink(
     settings?.whatsapp_number,
     "Hello Petals & Pearls! 🌸 I'd like to order a bouquet.",
   );
+
 
   return (
     <SiteLayout>
@@ -79,14 +89,21 @@ function HomePage() {
             </p>
           </div>
           <div className="relative">
-            <div className="overflow-hidden rounded-[2rem] border border-border/70">
-              <img
-                src={heroImage}
-                alt="Blush rose and gold chocolate bouquet by Petals & Pearls"
-                width={1408}
-                height={1200}
-                className="size-full object-cover"
-              />
+            <div
+              ref={emblaRef}
+              className="overflow-hidden rounded-[2rem] border border-border/70"
+            >
+              <div className="flex">
+                {heroImages.map((src, index) => (
+                  <div key={index} className="relative min-w-0 flex-[0_0_100%] aspect-[1408/1200]">
+                    <img
+                      src={src}
+                      alt={`Petals & Pearls bouquet ${index + 1}`}
+                      className="size-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
