@@ -74,7 +74,7 @@ function ContactPage() {
               <MessageCircle className="size-5 text-rose" />
               <span>
                 <span className="block text-sm font-medium">WhatsApp</span>
-                <span className="text-sm text-muted-foreground">+91 7483 413 587</span>
+                <span className="text-sm text-muted-foreground">+91 63649 43266</span>
               </span>
             </a>
             {settings?.instagram_url && (

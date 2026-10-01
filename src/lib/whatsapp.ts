@@ -2,7 +2,7 @@ export const FALLBACK_WHATSAPP = "916364943266";
 
 export function normalizeNumber(raw?: string | null) {
   const digits = (raw ?? FALLBACK_WHATSAPP).replace(/\D/g, "");
-  if (!digits) return FALLBACK_WHATSAPP;
+  if (!digits || digits.includes("0000000000")) return FALLBACK_WHATSAPP;
   if (digits.length === 10) return `91${digits}`;
   return digits;
 }
