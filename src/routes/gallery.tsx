@@ -9,7 +9,7 @@ type GalleryItem = {
   title: string | null;
   image_url: string;
   category: string | null;
-  occasion: string | null;
+  occasion: string | null;  
 };
 
 export const Route = createFileRoute("/gallery")({

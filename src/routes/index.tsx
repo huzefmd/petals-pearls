@@ -109,7 +109,26 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Trust / Inventory Stats */}
+      <section className="border-y border-border bg-background py-12">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-4 text-center sm:px-6 md:grid-cols-3">
+          <div className="flex flex-col items-center">
+            <p className="text-3xl font-serif font-bold text-primary">100+</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Orders Completed</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <p className="text-3xl font-serif font-bold text-primary">120+</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Active Designs</p>
+          </div>
+          <div className="flex flex-col items-center col-span-2 md:col-span-1">
+            <p className="text-3xl font-serif font-bold text-primary">100%</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Handcrafted Love</p>
+          </div>
+        </div>
+      </section>
+
       {/* Categories */}
+
       <Section title="Featured Categories" subtitle="Find the gift that fits the moment">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((c) => (
