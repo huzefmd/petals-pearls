@@ -1,9 +1,12 @@
-import { useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
-import { Menu, X, Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { useState, type ReactNode, useEffect } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Menu, X, Instagram, Mail, MapPin, Phone, ShoppingCart, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/lib/shop-data";
 import { WhatsAppFab } from "./WhatsAppFab";
+import { useCart } from "@/hooks/use-cart";
+import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -29,7 +32,33 @@ function Wordmark() {
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
   const { data: settings } = useSiteSettings();
+  const { items } = useCart();
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      setUser(authUser);
+    };
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    localStorage.removeItem('demo_admin_session');
+    localStorage.removeItem('petals-pearls-cart'); // Wipe the cart storage
+    setUser(null);
+    navigate({ to: '/' });
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -49,7 +78,29 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link to="/profile" className="relative p-2 text-foreground hover:text-primary transition-colors" title="My Profile">
+                  <User className="size-6" />
+                </Link>
+                <Button variant="ghost" size="sm" onClick={handleLogout} className="text-xs h-8">
+                  <LogOut className="size-4 mr-1" /> Logout
+                </Button>
+              </div>
+            ) : (
+              <Button asChild size="sm" variant="outline">
+                <Link to="/login">Login</Link>
+              </Button>
+            )}
+            <Link to="/checkout" className="relative p-2 text-foreground hover:text-primary transition-colors">
+              <ShoppingCart className="size-6" />
+              {cartCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full px-0 text-[10px] font-bold">
+                  {cartCount}
+                </Badge>
+              )}
+            </Link>
             <Button asChild size="sm" className="hidden sm:inline-flex">
               <Link to="/shop">Shop Bouquets</Link>
             </Button>
@@ -82,9 +133,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           </nav>
         )}
       </header>
-
       <main className="flex-1">{children}</main>
-
       <footer className="mt-20 border-t border-border bg-secondary/40">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
           <div>
@@ -141,7 +190,6 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           © {new Date().getFullYear()} Petals & Pearls · Handmade with love
         </div>
       </footer>
-
       <WhatsAppFab />
     </div>
   );

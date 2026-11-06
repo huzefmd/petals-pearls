@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MessageCircle, Check } from "lucide-react";
+import { MessageCircle, Check, ShoppingCart } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,44 +13,8 @@ import {
   CHOCOLATE_OPTIONS,
 } from "@/lib/shop-data";
 import { buildProductOrderMessage, formatINR, openWhatsApp } from "@/lib/whatsapp";
-
-export const Route = createFileRoute("/product/$slug")({
-  head: () => ({
-    meta: [
-      { title: "Bouquet Details — Petals & Pearls" },
-      {
-        name: "description",
-        content: "Customise your flower and chocolate bouquet and order it directly on WhatsApp.",
-      },
-      { property: "og:title", content: "Bouquet Details — Petals & Pearls" },
-      { property: "og:description", content: "Customise size, chocolates, flowers and gift message." },
-    ],
-  }),
-  component: ProductPage,
-});
-
-function Chip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
-        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-rose"
-      }`}
-    >
-      {active && <Check className="mr-1 inline size-3" />}
-      {label}
-    </button>
-  );
-}
+import { useCart } from "@/hooks/use-cart";
+import { toast } from "sonner";
 
 function ProductPage() {
   const { slug } = Route.useParams();
@@ -63,6 +27,19 @@ function ProductPage() {
   const [flowers, setFlowers] = useState<string[]>([]);
   const [giftMessage, setGiftMessage] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const { addItem } = useCart();
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      quantity: quantity,
+      image: images[0]
+    });
+    toast.success(`${product.name} added to cart!`);
+  };
 
   const toggle = (list: string[], set: (v: string[]) => void, value: string) =>
     set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
@@ -194,6 +171,13 @@ function ProductPage() {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">
+              <Button
+                size="lg"
+                className="flex-1"
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart className="mr-2 size-4" /> Add to Cart
+              </Button>
               <Button size="lg" onClick={() => openWhatsApp(settings?.whatsapp_number, message)}>
                 <MessageCircle className="mr-2 size-4" /> Order on WhatsApp
               </Button>
@@ -208,6 +192,29 @@ function ProductPage() {
   );
 }
 
+function Chip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+        active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-rose"
+      }`}
+    >
+      {active && <Check className="mr-1 inline size-3" />}
+      {label}
+    </button>
+  );
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
@@ -216,3 +223,18 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </div>
   );
 }
+
+export const Route = createFileRoute("/product/$slug")({
+  head: () => ({
+    meta: [
+      { title: "Bouquet Details — Petals & Pearls" },
+      {
+        name: "description",
+        content: "Customise your flower and chocolate bouquet and order it directly on WhatsApp.",
+      },
+      { property: "og:title", content: "Bouquet Details — Petals & Pearls" },
+      { property: "og:description", content: "Customise size, chocolates, flowers and gift message." },
+    ],
+  }),
+  component: ProductPage,
+})
